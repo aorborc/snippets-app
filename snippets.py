@@ -1,5 +1,16 @@
 import logging
+import argparse
+import sys
 
+def main():
+    """Main function"""
+    logging.info("Constructing parser")
+    parser = argparse.ArgumentParser(description="Store and retrieve snippets of text")
+    arguments = parser.parse_args(sys.argv[1:])
+
+if __name__ == "__main__":
+    main()
+    
 # Set the log output file, and the log level
 logging.basicConfig(filename="snippets.log", level=logging.DEBUG)
 
