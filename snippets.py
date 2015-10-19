@@ -35,7 +35,7 @@ def get(name):
 	message = cursor.fetchone()
 	connection.commit()
 	logging.debug("Snippet fetched successfully.")
-	return message
+	return message[0]
 			
 def main():
     """Main function"""
