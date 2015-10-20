@@ -14,10 +14,16 @@ def put(name, snippet):
 	"""Store a snippet with an associated name."""
 	logging.error("FIXME: Unimplemented - put({!r}, {!r})".format(name, snippet))
 	cursor = connection.cursor()
-	command = "insert into snippets values (%s, %s)"
-	cursor.execute(command, (name, snippet))
+	try:
+		command = "insert into snippets values (%s, %s)"
+		cursor.execute(command, (name, snippet))
+	except psycopg2.IntegrityError as e:
+		connection.rollback()
+		command = "update snippets set message=%s where keyword=%s"
+		cursor.execute(command, (snippet, name))
 	connection.commit()
 	logging.debug("Snippet stored successfully.")
+	get(name)
 	return name, snippet
 			
 
@@ -32,10 +38,16 @@ def get(name):
 	cursor = connection.cursor()
 	command = "select * from snippets where keyword='" + name + "'"
 	cursor.execute(command)
+	#fetchone()'s output is a tuple. You retireve the the values as you do it with arrays
 	message = cursor.fetchone()
 	connection.commit()
 	logging.debug("Snippet fetched successfully.")
-	return message[0]
+	if not message:
+		print "No matching keywords found. We're creating new one for you"
+		put(name, 'Created one since none found')
+		return get(name)
+	else:
+		return message[0]
 			
 def main():
     """Main function"""
