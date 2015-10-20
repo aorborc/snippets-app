@@ -35,12 +35,11 @@ def get(name):
 	Returns the snippet.
 	"""
 	logging.error("FIXME: Unimplemented - get({!r})".format(name))
-	cursor = connection.cursor()
 	command = "select * from snippets where keyword='" + name + "'"
-	cursor.execute(command)
 	#fetchone()'s output is a tuple. You retireve the the values as you do it with arrays
-	message = cursor.fetchone()
-	connection.commit()
+	with connection,connection.cursor() as cursor:
+		cursor.execute("select message from snippets where keyword=%s", (name,))
+		message = cursor.fetchone()
 	logging.debug("Snippet fetched successfully.")
 	if not message:
 		print "No matching keywords found. We're creating new one for you"
